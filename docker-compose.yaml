@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:18-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ai_product_research
+      POSTGRES_PASSWORD: ef2aa2f8-e239-11f0-bd70-5ee52574761b
+      POSTGRES_DB: ai_product_research
