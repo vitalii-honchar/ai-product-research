@@ -1,9 +1,8 @@
-import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from ai_product_research.agents import ProblemRetrieverAgent
+from ai_product_research.agents import ProblemRetrieverAgent, ProductFilterAgent
 from ai_product_research.domain import ProductHuntPost, AnalyzedProduct, BusinessProblem
 from ai_product_research.services import ProductHuntService, WebSiteScrapperService, \
     AnalyzedProductTelegramChannelService
@@ -19,15 +18,25 @@ class TelegramProductsResearchUseCase:
     problem_retriever_agent: ProblemRetrieverAgent
     scraper_service: WebSiteScrapperService
     analyzed_products_telegram_channel_service: AnalyzedProductTelegramChannelService
+    product_filter_agent: ProductFilterAgent
 
     async def execute(self, target_date: datetime) -> None:
         log.info(f"Start executing telegram products research use case: target_date = {target_date}")
         next_day = target_date + timedelta(days=1)
-        posts = await self.product_hunt_service.get_posts(posted_after=target_date, posted_before=next_day,
-                                                          limit=POSTS_LIMIT)
-        posts_stream = filter(lambda p: p is not None, map(self.analyze_post, posts))
-        analyzed_posts = await asyncio.gather(*posts_stream)
+        posts = await self.product_hunt_service.get_posts(posted_after=target_date, posted_before=next_day)
+        analyzed_posts: list[AnalyzedProduct] = []
+        for post in posts:
+            if len(analyzed_posts) >= POSTS_LIMIT:
+                break
+            analyzed_post = await self.analyze_post(post)
+            if analyzed_post is not None:
+                filter_passed = await self.product_filter_agent.filter_product(analyzed_post)
+                log.info(f"Product filter: {analyzed_post.name} passed={filter_passed}")
+                if filter_passed:
+                    analyzed_posts.append(analyzed_post)
+
         log.info(f"Analyzed posts: posts = {analyzed_posts}")
+
         await self.analyzed_products_telegram_channel_service.send_updates(analyzed_posts)
 
     async def analyze_post(self, post: ProductHuntPost) -> AnalyzedProduct | None:
@@ -41,6 +50,6 @@ class TelegramProductsResearchUseCase:
                 name=post.name,
                 problem=BusinessProblem.model_validate(business_problem.model_dump()),
             )
-        except Exception as e:
+        except Exception:
             log.error(f"Error during analyzing a post: post = {post}", exc_info=True)
             return None

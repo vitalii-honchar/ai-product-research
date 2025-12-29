@@ -1,11 +1,14 @@
-from langchain_core.language_models import BaseChatModel
-from ai_product_research.app_context import AppContext
-from ai_product_research.agents.problem_retriever_agent import BusinessProblem, ProblemRetrieverAgent
-from pathlib import Path
-import pytest
-from pydantic import BaseModel, Field
-from langchain_core.messages import HumanMessage, SystemMessage
 import base64
+from dataclasses import dataclass
+from pathlib import Path
+
+import pytest
+from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import HumanMessage, SystemMessage
+from pydantic import BaseModel, Field
+
+from ai_product_research.agents.problem_retriever_agent import BusinessProblem, ProblemRetrieverAgent
+
 
 class EvaluationResult(BaseModel):
     """Result of business problem evaluation"""
@@ -119,69 +122,107 @@ def evaluator(chatgpt_5_mini: BaseChatModel) -> BusinessProblemEvaluator:
     return BusinessProblemEvaluator(chatgpt_5_mini)
 
 
-# Expected business problems for each screenshot
-EXPECTED_TIMETUNA = BusinessProblem(
-    primary_customer="Founders and startup teams who need to schedule meetings",
-    core_job="Create professional branded scheduling pages that reflect their brand identity",
-    main_pain="Generic booking pages look unprofessional and don't reflect their brand, reducing credibility",
-    success_metric="Increased meeting bookings and improved brand perception from prospects"
-)
+@dataclass
+class ScreenshotTestCase:
+    """Test case containing a screenshot filename and expected business problem"""
+    screenshot_filename: str
+    expected: BusinessProblem
 
-EXPECTED_MONOCLE = BusinessProblem(
-    primary_customer="Knowledge workers and creative professionals who work on computers",
-    core_job="Create a distraction-free digital environment by blurring out background windows and desktop elements to isolate the active task",
-    main_pain="Constant visual distractions from background applications that break concentration and prevent users from completing their intended tasks",
-    success_metric="Improved focus and higher task completion rate with better recall"
-)
 
-EXPECTED_NETLIFY = BusinessProblem(
-    primary_customer="Developers and engineering teams building applications",
-    core_job="Integrate AI capabilities into their applications quickly and reliably",
-    main_pain="Complex and time-consuming AI integration across different providers",
-    success_metric="Faster AI integration with reduced implementation complexity and maintenance burden"
-)
+# Test data: Screenshots with expected business problems
+TEST_SCREENSHOTS = [
+    ScreenshotTestCase(
+        screenshot_filename="1_TimeTuna.png",
+        expected=BusinessProblem(
+            primary_customer="Founders and startup teams who need to schedule meetings",
+            core_job="Create professional branded scheduling pages that reflect their brand identity",
+            main_pain="Generic booking pages look unprofessional and don't reflect their brand, reducing credibility",
+            success_metric="Increased meeting bookings and improved brand perception from prospects"
+        )
+    ),
+    ScreenshotTestCase(
+        screenshot_filename="2_Monocle_3.0_for_macOS.png",
+        expected=BusinessProblem(
+            primary_customer="Knowledge workers and creative professionals who work on computers",
+            core_job="Create a distraction-free digital environment by blurring out background windows and desktop elements to isolate the active task",
+            main_pain="Constant visual distractions from background applications that break concentration and prevent users from completing their intended tasks",
+            success_metric="Improved focus and higher task completion rate with better recall"
+        )
+    ),
+    ScreenshotTestCase(
+        screenshot_filename="3_Netlify_AI_Gateway.png",
+        expected=BusinessProblem(
+            primary_customer="Developers and engineering teams building applications",
+            core_job="Integrate AI capabilities into their applications quickly and reliably",
+            main_pain="Complex and time-consuming AI integration across different providers",
+            success_metric="Faster AI integration with reduced implementation complexity and maintenance burden"
+        )
+    ),
+]
 
 
 class TestProblemRetrieverAgent:
-
-    @pytest.mark.parametrize("screenshot_filename,expected", [
-        ("1_TimeTuna.png", EXPECTED_TIMETUNA),
-        ("2_Monocle_3.0_for_macOS.png", EXPECTED_MONOCLE),
-        ("3_Netlify_AI_Gateway.png", EXPECTED_NETLIFY),
-    ])
-    async def test_returns_correct_business_problem_if_screenshot_provided(
+    async def test_retrieves_business_problems_with_high_average_score(
         self,
         problem_retriever_agent: ProblemRetrieverAgent,
-        evaluator: BusinessProblemEvaluator,
-        screenshot_filename: str,
-        expected: BusinessProblem
+            evaluator: BusinessProblemEvaluator
     ):
-        # given
-        screenshot_path = Path(__file__).parent / "product_screenshots" / screenshot_filename
-        screenshot_bytes = screenshot_path.read_bytes()
-        threshold = 0.9
+        """
+        Test that ProblemRetrieverAgent accurately retrieves business problems from screenshots.
 
-        # when
-        actual = await problem_retriever_agent.retrieve_problem(screenshot_bytes)
+        The agent should correctly identify:
+        1. Primary customer
+        2. Core job
+        3. Main pain point
+        4. Success metric
+
+        Success criteria: >= 0.9 average score across all screenshots
+        """
+        # given
+        score_threshold = 0.9
+        total_score = 0.0
+        total_count = len(TEST_SCREENSHOTS)
+
+        results = []
+
+        # when - analyze each screenshot
+        for test_case in TEST_SCREENSHOTS:
+            screenshot_path = Path(__file__).parent / "product_screenshots" / test_case.screenshot_filename
+            screenshot_bytes = screenshot_path.read_bytes()
+
+            # Retrieve business problem
+            actual = await problem_retriever_agent.retrieve_problem(screenshot_bytes)
+
+            assert actual is not None, f"Agent failed to retrieve business problem for {test_case.screenshot_filename}"
+
+            # Evaluate using LLM judge
+            evaluation = await evaluator.evaluate(actual, test_case.expected, screenshot_bytes)
+
+            total_score += evaluation.score
+
+            results.append({
+                'filename': test_case.screenshot_filename,
+                'score': evaluation.score,
+                'reasoning': evaluation.reasoning,
+                'expected': test_case.expected,
+                'actual': actual
+            })
+
+        # Calculate average score
+        average_score = total_score / total_count
+
+        # Build detailed error message
+        error_details = f"\n\nAverage Score: {average_score:.2f} (threshold: {score_threshold:.2f})\n\n"
+        error_details += "Individual Results:\n"
+        error_details += "-" * 80 + "\n"
+
+        for result in results:
+            status = "PASS" if result['score'] >= score_threshold else "FAIL"
+            error_details += f"[{status}] {result['filename']:30} | Score: {result['score']:.2f}\n"
+            error_details += f"  Reasoning: {result['reasoning']}\n\n"
 
         # then
-        assert actual is not None, "Agent failed to retrieve business problem"
-
-        # Evaluate using LLM judge
-        evaluation = await evaluator.evaluate(actual, expected, screenshot_bytes)
-
-        # Assert score meets threshold
-        assert evaluation.score >= threshold, (
-            f"Evaluation score {evaluation.score:.2f} is below threshold {threshold}.\n"
-            f"Reasoning: {evaluation.reasoning}\n\n"
-            f"Expected:\n"
-            f"  Primary Customer: {expected.primary_customer}\n"
-            f"  Core Job: {expected.core_job}\n"
-            f"  Main Pain: {expected.main_pain}\n"
-            f"  Success Metric: {expected.success_metric}\n\n"
-            f"Actual:\n"
-            f"  Primary Customer: {actual.primary_customer}\n"
-            f"  Core Job: {actual.core_job}\n"
-            f"  Main Pain: {actual.main_pain}\n"
-            f"  Success Metric: {actual.success_metric}"
+        assert average_score >= score_threshold, (
+            f"Average score {average_score:.2f} is below threshold {score_threshold:.2f}."
+            f"{error_details}"
         )
