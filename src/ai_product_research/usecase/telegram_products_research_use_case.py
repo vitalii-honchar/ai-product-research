@@ -29,8 +29,11 @@ class TelegramProductsResearchUseCase:
             if len(analyzed_posts) >= POSTS_LIMIT:
                 break
             analyzed_post = await self.analyze_post(post)
-            if analyzed_post is not None and await self.product_filter_agent.filter_product(analyzed_post):
-                analyzed_posts.append(analyzed_post)
+            if analyzed_post is not None:
+                filter_passed = await self.product_filter_agent.filter_product(analyzed_post)
+                log.info(f"Product filter: {analyzed_post.name} passed={filter_passed}")
+                if filter_passed:
+                    analyzed_posts.append(analyzed_post)
 
         log.info(f"Analyzed posts: posts = {analyzed_posts}")
 
