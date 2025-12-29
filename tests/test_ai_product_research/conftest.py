@@ -1,7 +1,10 @@
-from langchain_core.language_models import BaseChatModel
-from ai_product_research.agents import ProblemRetrieverAgent
-from ai_product_research.app_context import create_app_context, AppContext
 import pytest
+from langchain_core.language_models import BaseChatModel
+
+from ai_product_research.agents import ProblemRetrieverAgent
+from ai_product_research.agents.product_filter_agent import ProductFilterAgent
+from ai_product_research.app_context import create_app_context, AppContext
+
 
 @pytest.fixture
 def app_context() -> AppContext:
@@ -10,6 +13,11 @@ def app_context() -> AppContext:
 @pytest.fixture
 def problem_retriever_agent(app_context: AppContext) -> ProblemRetrieverAgent:
     return app_context.problem_retriever_agent
+
+
+@pytest.fixture
+def product_filter_agent(app_context: AppContext) -> ProductFilterAgent:
+    return app_context.product_filter_agent
 
 @pytest.fixture
 def chatgpt_5_mini(app_context: AppContext) -> BaseChatModel:
