@@ -22,7 +22,7 @@ class AppContext:
     problem_retriever_agent: ProblemRetrieverAgent
     telegram_product_research_use_case: TelegramProductsResearchUseCase
     analyzed_products_telegram_channel_service: AnalyzedProductTelegramChannelService
-
+    debug: bool
 
 def create_app_context() -> AppContext:
     settings = init_app_settings()
@@ -64,4 +64,5 @@ def create_app_context() -> AppContext:
             analyzed_products_telegram_channel_service=analyzed_products_telegram_channel_service,
         ),
         analyzed_products_telegram_channel_service=analyzed_products_telegram_channel_service,
+        debug=settings.debug,
     )
