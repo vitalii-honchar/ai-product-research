@@ -24,20 +24,27 @@ class TelegramProductsResearchUseCase:
         log.info(f"Start executing telegram products research use case: target_date = {target_date}")
         next_day = target_date + timedelta(days=1)
         posts = await self.product_hunt_service.get_posts(posted_after=target_date, posted_before=next_day)
-        analyzed_posts: list[AnalyzedProduct] = []
+        filtered_posts: list[AnalyzedProduct] = []
+        top_posts: list[AnalyzedProduct] = []
         for post in posts:
-            if len(analyzed_posts) >= POSTS_LIMIT:
+            if len(filtered_posts) >= POSTS_LIMIT:
                 break
             analyzed_post = await self.analyze_post(post)
             if analyzed_post is not None:
+                if len(top_posts) < POSTS_LIMIT:
+                    top_posts.append(analyzed_post)
                 filter_passed = await self.product_filter_agent.filter_product(analyzed_post)
                 log.info(f"Product filter: {analyzed_post.name} passed={filter_passed}")
                 if filter_passed:
-                    analyzed_posts.append(analyzed_post)
+                    filtered_posts.append(analyzed_post)
 
-        log.info(f"Analyzed posts: posts = {analyzed_posts}")
+        for post in top_posts:
+            if len(filtered_posts) >= POSTS_LIMIT:
+                break
+            filtered_posts.append(post)
 
-        await self.analyzed_products_telegram_channel_service.send_updates(analyzed_posts)
+        log.info(f"Analyzed posts: posts = {filtered_posts}")
+        await self.analyzed_products_telegram_channel_service.send_updates(filtered_posts)
 
     async def analyze_post(self, post: ProductHuntPost) -> AnalyzedProduct | None:
         log.info(f"Start analyzing post: post = {post}")
