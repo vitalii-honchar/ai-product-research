@@ -36,11 +36,11 @@ def create_app_context() -> AppContext:
     )
     chatgpt_5_nano = ChatOpenAI(
         model="gpt-5-nano",
-        temperature=0,
+        temperature=0.3,
         max_tokens=4096,
         max_retries=2,
         api_key=settings.openai_api_key,
-        reasoning_effort="minimal",
+        reasoning_effort="medium",
     )
 
     problem_retriever_agent = ProblemRetrieverAgent(chatgpt_5_mini)

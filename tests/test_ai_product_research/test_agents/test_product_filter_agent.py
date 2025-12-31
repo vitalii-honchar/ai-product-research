@@ -139,6 +139,119 @@ TEST_PRODUCTS = [
         ),
         expected_passed=False
     ),
+    # Products from Dec 29-30, 2025 runs that SHOULD PASS (AI-powered with real problems and $10K+ MRR potential)
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/capitall?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/3HV36AIJI7RHSZ?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='Capitall',
+            problem=BusinessProblem(
+                primary_customer='Startup founders and fundraising teams who are raising capital (users of a fundraising assistant).',
+                core_job="Act as a fundraising copilot to guide and manage users' fundraising activities via a dashboard.",
+                main_pain='Fundraising is complex and founders lack guidance and tools to efficiently run and close fundraising rounds.',
+                success_metric='Reduce time to close funding rounds (close fundraising rounds faster).'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/marketalerts-ai?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/PUUMQADJHIYLK5?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='MarketAlerts.ai',
+            problem=BusinessProblem(
+                primary_customer='Retail and professional investors and traders who monitor stocks and look for trade ideas.',
+                core_job='Continuously monitor selected tickers and surface AI-generated trade ideas and need-to-know alerts.',
+                main_pain='Inability to continuously track many markets/tickers and miss timely, actionable trade signals or market-moving events.',
+                success_metric='Increase the number of actionable trade ideas and alerts discovered (more trade opportunities identified).'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/giselle?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/WT6LK6BSKT7X4U?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='Giselle',
+            problem=BusinessProblem(
+                primary_customer='A‑Player product teams (product managers and product builders)',
+                core_job='Accelerate product delivery by building, deploying and orchestrating AI agents to automate product workflows.',
+                main_pain='Product teams cannot efficiently power product delivery because they lack tooling to create and operate AI agents and automate fragmented, manual product workflows.',
+                success_metric='Reduce time-to-market for product features — deliver product updates faster (accelerated product development).'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/dropstone-2?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/YSEQ7WJ6LAVPW6?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='Dropstone',
+            problem=BusinessProblem(
+                primary_customer='Engineering teams building autonomous agents and autonomous systems (Autonomous Engineering teams).',
+                core_job='Provide an intelligent runtime to develop, run, experiment on, and deploy autonomous agents.',
+                main_pain='Slow, fragmented iteration and validation of autonomous agent behavior due to lack of a dedicated runtime and experimentation tooling to explore solution space.',
+                success_metric='Reduce time-to-iterate and validate autonomous solutions (faster iteration and deployment of effective autonomous agents).'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/adcrafty-ai?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/5DNEUDAI74OX2H?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='AdCrafty AI',
+            problem=BusinessProblem(
+                primary_customer='Brand marketers, e-commerce teams and social media advertisers who need UGC-style video content.',
+                core_job='Generate realistic AI-created UGC (user-generated content) videos for marketing and social ads.',
+                main_pain='Difficulty producing authentic-looking UGC videos quickly and at scale.',
+                success_metric='Reduce UGC video production time and cost so brands can produce a higher volume of authentic video content.'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/sequenzy?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/2BGEACXP2RIESS?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='Sequenzy',
+            problem=BusinessProblem(
+                primary_customer='SaaS marketing teams and founders who run product and growth email campaigns',
+                core_job='Build automated marketing email sequences and campaigns for SaaS products',
+                main_pain='Setting up effective automated email campaigns is slow, technically/creatively demanding, and takes days',
+                success_metric='Reduce campaign setup time from days to minutes (enable faster launch of automated email sequences)'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/photo-studio-2?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/AJL3J7PF2VOMO6?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='Photo Studio AI',
+            problem=BusinessProblem(
+                primary_customer='Creators and everyday people who need high-quality photos for profiles and content (social media creators, influencers, dating-profile users).',
+                core_job='Generate professional-quality images (portraits, product and lifestyle photos) quickly.',
+                main_pain="Users can't easily create compelling, high-converting photos that drive engagement or matches.",
+                success_metric='Increase profile matches by 3× (and similar engagement lift from using higher-quality photos).'
+            )
+        ),
+        expected_passed=True
+    ),
+    ProductTestCase(
+        product=AnalyzedProduct(
+            origin_url='https://www.producthunt.com/products/kalpal?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            product_url='https://www.producthunt.com/r/YNZUWPIVPK5HL2?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+product-hunt-cli+%28ID%3A+252374%29',
+            name='Kalpal',
+            problem=BusinessProblem(
+                primary_customer='Health-conscious individuals and fitness enthusiasts who want personalized nutrition guidance via a mobile app.',
+                core_job='Analyze meals and provide AI-powered, personalized nutrition coaching.',
+                main_pain="Manual, calorie-only meal tracking that is time-consuming and doesn't provide actionable, personalized nutrition insights.",
+                success_metric='Reduce time spent logging and analyzing meals while increasing accuracy of meal nutrition insights (faster tracking and improved dietary decision-making).'
+            )
+        ),
+        expected_passed=True
+    ),
 ]
 
 

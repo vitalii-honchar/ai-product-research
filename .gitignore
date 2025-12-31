@@ -11,3 +11,6 @@ wheels/
 .idea/
 screenshots/
 .env
+
+# Claude Code scratchpad files
+.claude/branch-analysis.md

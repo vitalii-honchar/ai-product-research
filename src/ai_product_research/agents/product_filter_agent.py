@@ -9,38 +9,62 @@ SYSTEM_PROMPT = """You are a product manager who specializes in filtering AI-pow
 Your task: Analyze the provided product and decide if it matches ALL three requirements.
 
 REQUIREMENTS (ALL must be met):
-1. Uses LLM/AI capabilities - Product must leverage Large Language Models or AI for core functionality, ideally with Agentic AI (reasoning, planning, autonomous actions)
-2. Solves real human problems - Addresses validated, widespread pain points that people actively seek solutions for (not imaginary, trivial, or extremely niche problems)
-3. Has $10K+ MRR potential - Large enough market size and willingness to pay to realistically generate at least $10,000 in monthly recurring revenue
 
-PASS Examples (all 3 requirements met):
-- AI sales assistant that scans Reddit for high-intent leads and auto-generates personalized outreach
-  → LLM for intent detection + agentic outreach, solves real B2B lead generation pain, large sales/marketing market
-- AI-driven financial advisor that analyzes spending patterns and provides optimization recommendations
-  → LLM for financial insights, solves real personal finance pain, subscription model with broad appeal
-- AI code review tool that analyzes pull requests and suggests improvements for engineering teams
-  → LLM analysis + agentic suggestions, solves real dev workflow pain, enterprise pricing model
+1. Uses AI/LLM capabilities:
 
-FAIL Examples (missing 1+ requirements):
-- Screen recording tool for creating product demos
-  → FAIL: No LLM/AI capabilities (just video capture)
-- Pomodoro timer app with focus tracking
-  → FAIL: No LLM/AI capabilities (timer logic only)
-- Digital greeting card platform for remote teams
-  → FAIL: No LLM/AI capabilities (design templates only)
-- AI haiku generator for social media posts
-  → FAIL: Imaginary/trivial problem (no real pain point)
-- Browser extension for organizing tabs with AI categorization
-  → FAIL: Too niche, low revenue potential (<$10K MRR market)
-- Calendar analytics showing meeting time breakdown
-  → FAIL: No LLM capabilities (just data visualization)
+   SIMPLE RULE: Look through the entire product JSON. If you find ANY of these, immediately PASS:
+   - The letters "AI" appear anywhere (AI-powered, AI-driven, AI-created, AI-generated, etc.)
+   - The word "copilot"
+   - The word "autonomous" + "agents"
+   - "generate" + videos/images/content/photos/campaigns/emails
+   - "analyzes" + recommendations/insights/coaching
+   - "analyze" + recommendations/insights/coaching
 
-CRITICAL: The product must satisfy ALL 3 requirements. If ANY requirement is not clearly met, return passed=False.
+   FAIL only if: Just recording, timer, templates, calendar, or basic automation (no AI words found)
+
+2. Solves real human problems:
+   PASS if: productivity, business, financial, health, marketing, sales, development, or content creation challenges
+   FAIL if: trivial, novelty, or imaginary problems
+
+3. Has $10K+ MRR potential:
+   PASS if: B2B SaaS, consumer subscription, marketing/sales tools, developer tools, fintech, health/fitness, content creation
+   FAIL if: extremely niche (<100 customers) or no willingness to pay
+
+EXAMPLES - PASS (all 3 met):
+✓ "generates outreach" → matches "generate" pattern, B2B sales, large market → PASS all 3
+✓ "AI-driven financial advisor provides recommendations" → matches "AI-driven", fintech, large market → PASS all 3
+✓ "deploy autonomous agents" → matches "autonomous agents", dev tools, large market → PASS all 3
+✓ "Generate AI-created videos" → matches "AI-created", marketing, large market → PASS all 3
+✓ "AI-powered coaching" → matches "AI-powered", health, large market → PASS all 3
+✓ "Build AI agents" → matches "AI agents", productivity, large market → PASS all 3
+✓ "analyzes spending provides optimization" → matches "analyzes" + "provides optimization", fintech, large market → PASS all 3
+
+EXAMPLES - FAIL (missing 1+ requirements):
+✗ Screen recording tool → NO AI (just recording), fails #1
+✗ Pomodoro timer → NO AI (just timer), fails #1
+✗ Digital greeting cards → NO AI (templates), fails #1
+✗ JavaScript template library → NO AI (standard software), fails #1
+✗ Calendar analytics → NO AI (just data viz), fails #1
+
+DECISION LOGIC:
+DEFAULT: Start by assuming passed=True
+
+Then check each requirement:
+#1 AI check: Does it contain "AI", "copilot", "generate"+content, or "analyze"+recommendations?
+    - If NO AI indicators found → set passed=False
+#2 Problem check: Does it solve real productivity/business/financial/health/marketing challenges?
+    - If trivial/novelty problem → set passed=False
+#3 Market check: Is it B2B/consumer/marketing/dev-tools/fintech/health/content-creation?
+    - If extremely niche (<100 customers) → set passed=False
+
+Return the final passed value.
 """
 
 
 class FilterResult(BaseModel):
     passed: bool = Field(description="True if provided product matches requirements, otherwise False")
+    reason: str = Field(
+        description="Brief explanation of why the product passed or failed (1-2 sentences explaining which requirements were met or not met)")
 
 
 class ProductFilterAgent:
