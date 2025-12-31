@@ -150,45 +150,123 @@ Tests use LLM-based evaluation for agent quality:
 - Product filtering ensures only AI-powered products with market potential are surfaced
 - Backfill strategy ensures 3 products are always posted, even if filter is too strict
 
-## Scratchpad Technique (Branch Analysis)
+## Issue and Plan Management
 
-When working on a feature branch, maintain a scratchpad file to track thoughts, progress, and decisions:
+This repository uses a structured approach to manage development tasks through three distinct files:
+
+### File Structure
+
+1. **Issues** (`issues/<number>.md`) - WHAT needs to be done
+    - Problem descriptions and requirements
+    - Committed to version control
+    - Sequential numbering (1, 2, 3...)
+
+2. **Plans** (`docs/plan_<number>.md`) - HOW to solve it
+    - Implementation approach and strategy
+    - Committed to version control
+    - Matches issue number
+
+3. **Branch Analysis** (`.claude/branch-analysis.md`) - DOING it now
+    - Real-time working scratchpad
+    - NOT committed (gitignored)
+    - Active during development
+
+### Workflow
+
+```
+1. Create issue          → issues/5.md
+2. Create plan           → docs/plan_5.md
+3. Create branch         → git checkout -b issue-5-feature-name
+4. Work & update scratch → .claude/branch-analysis.md
+5. Commit & reference    → "Implement feature (issue #5)"
+6. Keep for history      → issues/5.md and docs/plan_5.md remain in repo
+```
+
+### Issue Template
+
+Create `issues/<number>.md` with this structure:
+
+```markdown
+# Issue #<number>: [Title]
+
+## Problem
+
+[Clear description of the problem or feature request]
+
+## Context
+
+[Background information, why this matters, related issues]
+
+## Acceptance Criteria
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] Criterion 3
+
+## Additional Notes
+
+[Any other relevant information, constraints, or considerations]
+```
+
+### Plan Template
+
+Create `docs/plan_<number>.md` with this structure:
+
+```markdown
+# Plan for Issue #<number>
+
+## Analysis
+
+[Your understanding of the problem after exploring the codebase]
+
+## Approach
+
+[High-level strategy for solving the issue]
+
+## Implementation Steps
+
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+## Files to Modify/Create
+
+- `path/to/file1.py` - [What changes]
+- `path/to/file2.py` - [What changes]
+
+## Testing Strategy
+
+[How to verify the implementation works]
+
+## Risks & Considerations
+
+[Potential issues, edge cases, or trade-offs]
+```
+
+### Branch Analysis (Scratchpad)
+
+When actively working on an issue, maintain `.claude/branch-analysis.md`:
 
 **File Location**: `.claude/branch-analysis.md`
 
 **Purpose**:
 
-- Document your thought process and analysis as you work
-- Track progress on tasks and milestones
-- Record decisions made and their rationale
-- Maintain context across multiple sessions
-- Keep notes about code exploration and discoveries
+- Real-time thought process and progress tracking
+- Working notes during development
+- Context maintenance across sessions
 
-**Workflow**:
-
-1. When starting work on any branch, create or update `.claude/branch-analysis.md`
-2. Use it as a working scratchpad to document:
-    - Initial analysis and understanding of the task
-    - Code exploration findings (files examined, patterns discovered)
-    - Implementation decisions and trade-offs
-    - Progress updates as you complete subtasks
-    - Blockers or questions that arise
-    - Test results and validation outcomes
-3. Update the file throughout your work session
-4. Use markdown formatting for clarity
-
-**Example Structure**:
+**Template**:
 
 ```markdown
 # Branch Analysis: [branch-name]
 
 ## Objective
 
-[Brief description of the task/feature]
+[Brief description from issue #<number>]
 
 ## Initial Analysis
 
-[Your understanding after exploring the codebase]
+[Findings from codebase exploration]
 
 ## Progress
 
@@ -203,13 +281,21 @@ When working on a feature branch, maintain a scratchpad file to track thoughts, 
 
 ## Notes & Discoveries
 
-- [Observations about the codebase]
-- [Patterns or conventions found]
+- [Code patterns found]
+- [Important observations]
 
 ## Blockers
 
 - [Any issues or questions]
 ```
 
-**Note**: This file is for internal use and should not be committed to the repository. Add `.claude/branch-analysis.md`
-to `.gitignore` if needed.
+**Note**: Branch analysis files are gitignored and used only during active development.
+
+### Best Practices
+
+1. **Issue numbers are sequential** - Check existing issues to find the next number
+2. **One issue, one plan** - Keep them focused and atomic
+3. **Plans are living documents** - Update if approach changes during implementation
+4. **Reference issue numbers in commits** - E.g., "Fix bug in filter agent (issue #12)"
+5. **Keep resolved issues** - Don't delete them; they provide project history
+6. **Branch naming** - Optionally use `issue-<number>-description` format
