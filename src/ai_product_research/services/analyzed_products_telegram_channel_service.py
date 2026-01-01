@@ -61,8 +61,8 @@ class AnalyzedProductTelegramChannelService:
 
         return f"""🚀 *{name}*
 
-👥 *Customer:* {customer}
 💼 *Job to be Done:* {job}
+👥 *Customer:* {customer}
 ⚡ *Pain Point:* {pain}
 📊 *Success Metric:* {metric}
 
